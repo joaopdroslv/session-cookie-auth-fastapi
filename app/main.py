@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Request, Response, Form
+from fastapi import FastAPI, Form, Request, Response
 from fastapi.responses import HTMLResponse
+from lifespan import lifespan
 
-
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -18,7 +18,12 @@ def login_page():
 
 
 @app.post("/login")
-def login(request: Request, response: Response, email: str = Form(...), password: str = Form(...)):
+def login(
+    request: Request,
+    response: Response,
+    email: str = Form(...),
+    password: str = Form(...),
+):
 
     print(request.__dict__)
     print(response.__dict__)
