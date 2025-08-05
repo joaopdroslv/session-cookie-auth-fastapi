@@ -3,11 +3,10 @@ from database.deps import get_db
 from fastapi import APIRouter, Depends, Form, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from modules.user import create_user, validate_unique_email
+from passlib.hash import bcrypt
 from pydantic import ValidationError
 from schemas.auth import RegisterForm
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from passlib.hash import bcrypt
 
 router = APIRouter(prefix="/auth")
 
@@ -42,7 +41,10 @@ async def register(
         if not validate_unique_email(db, form.email):
             return templates.TemplateResponse(
                 name="auth/register.html",
-                context={"request": request, "error": f"ERROR! Email is already in use."},
+                context={
+                    "request": request,
+                    "error": f"ERROR! Email is already in use.",
+                },
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
