@@ -1,14 +1,22 @@
+from uuid import uuid4
+
 from config import templates
 from database.deps import get_db
 from fastapi import APIRouter, Depends, Form, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from models.session import Session as UserSession
+from models.user import User
 from modules.user import create_user, validate_unique_email
-from passlib.hash import bcrypt
+from passlib.context import CryptContext
 from pydantic import ValidationError
 from schemas.auth import RegisterForm
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+SESSION_COOKIE_NAME = "session_id"
 
 
 @router.get("/register", response_class=HTMLResponse)
@@ -49,7 +57,7 @@ async def register(
             )
 
         form_dict = form.model_dump()
-        form_dict["password"] = bcrypt.hash(form_dict["password"])
+        form_dict["password"] = pwd_context.hash(form_dict["password"])
         del form_dict["confirm_password"]  # This field is useless now
 
         create_user(db, **form_dict)
@@ -82,7 +90,33 @@ def login(
     response: Response,
     email: str = Form(...),
     password: str = Form(...),
+    db: Session = Depends(get_db),
 ):
 
-    print(email)
-    print(password)
+    # Validate password
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user or not pwd_context.verify(password, user.password):
+        return templates.TemplateResponse(
+            name="auth/login.html",
+            context={
+                "request": request,
+                "error": f"ERROR! Incorrect e-mail or password.",
+            },
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Creating the new session
+    session_id = str(uuid4())
+
+    new_session = UserSession(id=session_id, user_id=user.id)
+    db.add(new_session)
+    db.commit()
+
+    # Redirecting to the homepage
+    redirect = RedirectResponse("/app/", status_code=status.HTTP_303_SEE_OTHER)
+    redirect.set_cookie(
+        key=SESSION_COOKIE_NAME, value=session_id, httponly=True, max_age=3600
+    )
+
+    return redirect

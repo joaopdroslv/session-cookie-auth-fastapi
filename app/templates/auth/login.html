@@ -21,6 +21,11 @@
         class="form-control"
         placeholder="..."
       /><br />
+      {% if error %}
+        <div class="alert alert-danger mt-03 mb-03" role="alert">
+          {{ error }}
+        </div>
+      {% endif %}
       <div class="d-flex justify-content-center align-items-center w-100">
         <button type="submit" class="btn btn-primary w-50">Login</button>
       </div>
