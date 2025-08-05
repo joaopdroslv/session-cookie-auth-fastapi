@@ -1,6 +1,11 @@
 from config import templates
-from fastapi import APIRouter, Form, Request, Response
-from fastapi.responses import HTMLResponse
+from database.deps import get_db
+from fastapi import APIRouter, Depends, Form, Request, Response, status
+from fastapi.responses import HTMLResponse, RedirectResponse
+from modules.user import create_user
+from pydantic import ValidationError
+from schemas.auth import RegistrationForm
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/auth")
 
@@ -21,12 +26,31 @@ async def register(
     email: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
+    db: Session = Depends(get_db),
 ):
 
-    print(name)
-    print(email)
-    print(password)
-    print(confirm_password)
+    try:
+        form = RegistrationForm(  # Validating all inputed values
+            email=email,
+            password=password,
+            confirm_password=confirm_password,
+            name=name,
+        )
+
+    except ValidationError as e:
+        error_msg = e.errors()[0]["msg"]
+        return templates.TemplateResponse(
+            name="auth/register.html",
+            context={"request": request, "error": f"ERROR! {error_msg}"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    form_dict = form.model_dump()
+    del form_dict["confirm_password"]  # This field is useless now
+
+    create_user(db, **form_dict)
+
+    return RedirectResponse(url="/auth/login", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/login", response_class=HTMLResponse)

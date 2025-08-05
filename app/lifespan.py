@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from database.database import Base, engine
 from fastapi import FastAPI
+from models.session import Session
 from models.user import User
 
 

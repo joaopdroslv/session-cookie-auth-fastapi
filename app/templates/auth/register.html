@@ -6,11 +6,11 @@
 
 <div class="d-flex justify-content-center align-items-center vh-100">
   <div class="w-25">
-    <form action="/register" method="POST">
+    <form action="/auth/register" method="POST">
       Full Name
       <input
         type="text"
-        name="full_name"
+        name="name"
         class="form-control mt-1"
         placeholder="..."
       /><br />
@@ -35,6 +35,11 @@
         class="form-control mt-1"
         placeholder="..."
       /><br />
+      {% if error %}
+        <div class="alert alert-danger mt-03 mb-03" role="alert">
+          {{ error }}
+        </div>
+      {% endif %}
       <div class="d-flex justify-content-center align-items-center w-100">
         <button type="submit" class="btn btn-primary w-50">Register</button>
       </div>
