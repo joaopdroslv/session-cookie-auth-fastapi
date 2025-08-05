@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, ValidationInfo, field_validator
 
 
-class RegistrationForm(BaseModel):
+class RegisterForm(BaseModel):
     email: EmailStr
     password: str
     confirm_password: str
