@@ -2,7 +2,7 @@ FROM python:3.12.8
 
 WORKDIR /app
 
-COPY ./app /app
+COPY ./app .
 COPY .env .
 COPY requirements.txt .
 
