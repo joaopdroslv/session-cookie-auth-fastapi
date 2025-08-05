@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="w-25">
+    <form action="/register" method="POST">
+      Full Name
+      <input
+        type="text"
+        name="full_name"
+        class="form-control mt-1"
+        placeholder="..."
+      /><br />
+      E-mail
+      <input
+        type="text"
+        name="email"
+        class="form-control mt-1"
+        placeholder="..."
+      /><br />
+      Password
+      <input
+        type="password"
+        name="password"
+        class="form-control mt-1"
+        placeholder="..."
+      /><br />
+      Confirm your password
+      <input
+        type="password"
+        name="confirm_password"
+        class="form-control mt-1"
+        placeholder="..."
+      /><br />
+      <div class="d-flex justify-content-center align-items-center w-100">
+        <button type="submit" class="btn btn-primary w-50">Register</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="w-25">
+    <form action="/login" method="POST">
+      E-mail
+      <input
+        type="text"
+        name="email"
+        class="form-control"
+        placeholder="..."
+      /><br />
+      Password
+      <input
+        type="password"
+        name="password"
+        class="form-control"
+        placeholder="..."
+      /><br />
+      <div class="d-flex justify-content-center align-items-center w-100">
+        <button type="submit" class="btn btn-primary w-50">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
