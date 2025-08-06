@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 
 def validate_unique_email(db: Session, email: str):
+
     return db.query(User).filter(User.email == email).first() is None
 
 
@@ -15,3 +16,8 @@ def create_user(db: Session, email: str, password: str, name: str) -> User:
     db.refresh(new_user)
 
     return new_user
+
+
+def get_user_by_email(db: Session, email: str) -> User:
+
+    return db.query(User).filter(User.email == email).first()

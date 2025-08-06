@@ -1,12 +1,12 @@
 from uuid import uuid4
 
-from config import templates
+from config import SESSION_COOKIE_NAME, templates
 from database.deps import get_db
 from fastapi import APIRouter, Depends, Form, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from models.session import Session as UserSession
 from models.user import User
-from modules.user import create_user, validate_unique_email
+from modules.user import create_user, validate_unique_email, get_user_by_email
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from schemas.auth import RegisterForm
@@ -15,8 +15,6 @@ from sqlalchemy.orm import Session
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-SESSION_COOKIE_NAME = "session_id"
 
 
 @router.get("/register", response_class=HTMLResponse)
@@ -94,7 +92,7 @@ def login(
 ):
 
     # Validate password
-    user = db.query(User).filter(User.email == email).first()
+    user = get_user_by_email(db, email)
 
     if not user or not pwd_context.verify(password, user.password):
         return templates.TemplateResponse(
@@ -108,8 +106,15 @@ def login(
 
     # Creating the new session
     session_id = str(uuid4())
+    client_host = request.client.host
+    user_agent = request.headers.get("user-agent")
 
-    new_session = UserSession(id=session_id, user_id=user.id)
+    new_session = UserSession(
+        id=session_id,
+        user_id=user.id,
+        ip_address=client_host,
+        user_agent=user_agent,
+    )
     db.add(new_session)
     db.commit()
 
@@ -118,5 +123,4 @@ def login(
     redirect.set_cookie(
         key=SESSION_COOKIE_NAME, value=session_id, httponly=True, max_age=3600
     )
-
     return redirect
