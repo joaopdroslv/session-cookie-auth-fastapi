@@ -1,0 +1,3 @@
+- [ ] Finalize session owner recovery
+- [ ] Create more protected routes and play around with it
+- [ ] A view that signals the need to log in
