@@ -1,3 +1,4 @@
+import logging
 import time
 from contextlib import asynccontextmanager
 
@@ -6,6 +7,8 @@ from fastapi import FastAPI
 from models.session import Session
 from models.user import User
 from sqlalchemy import text
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -18,18 +21,20 @@ async def lifespan(app: FastAPI):
         try:
             with engine.connect() as conn:
                 conn.execute(text("SELECT 1"))
-            print("Database is ready!")
+            logger.info("Database is ready!")
             break
 
         except Exception as e:
-            print(f"Database not ready yet (attempt {attempt + 1}/{max_tries}): {e}")
+            logger.info(
+                f"Database not ready yet (attempt {attempt + 1}/{max_tries}): {e}"
+            )
             time.sleep(wait_seconds)
 
     else:
         raise RuntimeError("Database did not become ready in time")
 
-    print("Creating tables...")
+    logger.info("Creating tables...")
     Base.metadata.create_all(bind=engine)
-    print("Tables created successfully.")
+    logger.info("Tables created successfully.")
 
     yield

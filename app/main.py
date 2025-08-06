@@ -1,3 +1,4 @@
+import logs
 from fastapi import FastAPI
 from lifespan import lifespan
 from middlewares.session import SessionMiddleware
