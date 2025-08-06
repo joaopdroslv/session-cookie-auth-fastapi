@@ -9,3 +9,10 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     name = Column(String)
+
+    def friendly_dict(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "name": self.name,
+        }
