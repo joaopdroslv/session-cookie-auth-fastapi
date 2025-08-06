@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Form, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from models.session import Session as UserSession
 from models.user import User
-from modules.user import create_user, validate_unique_email, get_user_by_email
+from modules.user import create_user, get_user_by_email, validate_unique_email
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from schemas.auth import RegisterForm
