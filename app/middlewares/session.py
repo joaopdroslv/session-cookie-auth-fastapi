@@ -22,6 +22,9 @@ class SessionMiddleware(BaseHTTPMiddleware):
 
         session_id = request.cookies.get(SESSION_COOKIE_NAME)
 
+        logger.info(f'Has "session_id": {session_id is not None}')
+        logger.info(session_id)
+
         if not session_id:
             logger.info('Missing "session_id", redirecting to login.')
             return RedirectResponse("/auth/login", status_code=status.HTTP_302_FOUND)
@@ -31,6 +34,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
             db: Session
 
             with get_db_context() as db:
+
                 valid_user_session: UserSession = (
                     db.query(UserSession)
                     .filter(
@@ -39,7 +43,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
                     .first()
                 )
 
-                now = datetime.now()
+                logger.info(f"Has valid user session: {valid_user_session is not None}")
 
                 if not valid_user_session:
                     logger.info(
@@ -48,6 +52,8 @@ class SessionMiddleware(BaseHTTPMiddleware):
                     return RedirectResponse(
                         "/auth/login", status_code=status.HTTP_302_FOUND
                     )
+
+                now = datetime.now()
 
                 # Validate if the session has expired by the total lifetime or due to inactivity time
                 session_lifespan = (
