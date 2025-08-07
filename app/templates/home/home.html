@@ -4,11 +4,16 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-  <div class="w-50">
-    <h1>This is the application's homepage.</h1>
-    {{ user }}
-    <p>It's a protected route, you should only access it after authentication.</p>
+<div class="container d-flex flex-column mt-5 vh-100">
+  <div class="w-100 text-end">
+    <h5>Logged In as [ {{ user.name }} ]</h5>
+    <p class="text-secondary fst-italic">{{ user.email }}</p>
+  </div>
+  <div class="w-100">
+    <h1 class="mt-4">This is the application's homepage.</h1>
+    <p>
+      It's a protected route, you should only access it after authentication.
+    </p>
   </div>
 </div>
 
