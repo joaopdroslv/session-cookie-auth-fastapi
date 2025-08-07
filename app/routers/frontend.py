@@ -1,5 +1,5 @@
 from config import FRONTEND_PREFIX, templates
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from models.user import User
 from modules.session import get_session_owner

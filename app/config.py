@@ -5,7 +5,12 @@ templates = Jinja2Templates(directory="templates")
 API_PREFIX = "/api/v1"
 FRONTEND_PREFIX = "/app"
 
-PUBLIC_PATHS = [f"{FRONTEND_PREFIX}/login", f"{FRONTEND_PREFIX}/register"]
+PUBLIC_PATHS = [
+    f"{FRONTEND_PREFIX}/login",
+    f"{API_PREFIX}/auth/login",
+    f"{FRONTEND_PREFIX}/register",
+    f"{API_PREFIX}/auth/register",
+]
 
 SESSION_COOKIE_NAME = "session_id"
 

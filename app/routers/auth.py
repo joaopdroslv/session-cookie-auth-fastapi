@@ -3,7 +3,7 @@ from uuid import uuid4
 from config import SESSION_COOKIE_NAME, templates
 from database.deps import get_db
 from fastapi import APIRouter, Depends, Form, Request, Response, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from models.session import Session as UserSession
 from models.user import User
 from modules.user import create_user, get_user_by_email, validate_unique_email

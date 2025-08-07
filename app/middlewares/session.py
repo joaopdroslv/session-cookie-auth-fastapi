@@ -3,12 +3,10 @@ from datetime import datetime
 
 from config import PUBLIC_PATHS, SESSION_COOKIE_NAME, SESSION_TTL, TIME_TO_INACTIVATE
 from database.deps import get_db_context
-from fastapi import status
+from helpers.responses import go_to_401_error_page
 from models.session import Session as UserSession
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import RedirectResponse, Response
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +21,10 @@ class SessionMiddleware(BaseHTTPMiddleware):
         session_id = request.cookies.get(SESSION_COOKIE_NAME)
 
         logger.info(f'Has "session_id": {session_id is not None}')
-        logger.info(session_id)
 
         if not session_id:
             logger.info('Missing "session_id", redirecting to login.')
-            return RedirectResponse("/app/login", status_code=status.HTTP_303_SEE_OTHER)
+            return go_to_401_error_page(request)
 
         try:
             valid_user_session = None
@@ -49,9 +46,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
                     logger.info(
                         'Invalid or expired "session_id", redirecting to login.'
                     )
-                    return RedirectResponse(
-                        "/app/login", status_code=status.HTTP_303_SEE_OTHER
-                    )
+                    return go_to_401_error_page(request)
 
                 now = datetime.now()
 
@@ -75,16 +70,14 @@ class SessionMiddleware(BaseHTTPMiddleware):
                         "Session expired, redirecting user to the login page..."
                     )
 
-                    return RedirectResponse(
-                        "/app/login", status_code=status.HTTP_303_SEE_OTHER
-                    )
+                    return go_to_401_error_page(request)
 
                 valid_user_session.last_seen = now
                 db.commit()
 
         except Exception as e:
 
-            logger.error("Something went wrong on the SessionMiddleware.")
-            logger.error(e)
+            logger.exception("Something went wrong on the SessionMiddleware.")
+            raise
 
         return await call_next(request)
