@@ -21,9 +21,9 @@
         class="form-control"
         placeholder="..."
       /><br />
-      {% if error %}
+      {% if msg %}
         <div class="alert alert-danger mt-03 mb-03" role="alert">
-          {{ error }}
+          {{ msg }}
         </div>
       {% endif %}
       <div class="d-flex justify-content-center align-items-center w-100">
@@ -31,7 +31,7 @@
       </div>
     </form>
     <div class="d-flex justify-content-center align-items-center w-100">
-      <a href="{{ request.url_for('register') }}" class="btn btn-secondary w-50">Create Account</a>
+      <a href="{{ request.url_for('register') }}" class="btn btn-secondary w-50">Register</a>
     </div>
   </div>
 </div>

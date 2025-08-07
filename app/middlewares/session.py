@@ -3,7 +3,8 @@ from datetime import datetime
 
 from config import PUBLIC_PATHS, SESSION_COOKIE_NAME, SESSION_TTL, TIME_TO_INACTIVATE
 from database.deps import get_db_context
-from helpers.responses import go_to_401_error_page
+from fastapi import status
+from helpers.responses import render_template
 from models.session import Session as UserSession
 from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -24,7 +25,12 @@ class SessionMiddleware(BaseHTTPMiddleware):
 
         if not session_id:
             logger.info('Missing "session_id", redirecting to login.')
-            return go_to_401_error_page(request)
+
+            return render_template(
+                request,
+                template="errors/401.html",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
 
         try:
             valid_user_session = None
@@ -46,7 +52,12 @@ class SessionMiddleware(BaseHTTPMiddleware):
                     logger.info(
                         'Invalid or expired "session_id", redirecting to login.'
                     )
-                    return go_to_401_error_page(request)
+
+                    return render_template(
+                        request,
+                        template="errors/401.html",
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                    )
 
                 now = datetime.now()
 
@@ -70,7 +81,11 @@ class SessionMiddleware(BaseHTTPMiddleware):
                         "Session expired, redirecting user to the login page..."
                     )
 
-                    return go_to_401_error_page(request)
+                    return render_template(
+                        request,
+                        template="errors/401.html",
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                    )
 
                 valid_user_session.last_seen = now
                 db.commit()

@@ -4,6 +4,7 @@ from config import SESSION_COOKIE_NAME, templates
 from database.deps import get_db
 from fastapi import APIRouter, Depends, Form, Request, Response, status
 from fastapi.responses import RedirectResponse
+from helpers.responses import render_template
 from models.session import Session as UserSession
 from models.user import User
 from modules.user import create_user, get_user_by_email, validate_unique_email
@@ -37,13 +38,12 @@ async def register(
         )
 
         if not validate_unique_email(db, form.email):
-            return templates.TemplateResponse(
-                name="auth/register.html",
-                context={
-                    "request": request,
-                    "error": f"ERROR! Email is already in use.",
-                },
+
+            return render_template(
+                request,
+                template="auth/register.html",
                 status_code=status.HTTP_400_BAD_REQUEST,
+                msg="ERROR! Email is already in use.",
             )
 
         form_dict = form.model_dump()
@@ -57,10 +57,11 @@ async def register(
         # Formatting pydantic's error message, it would be possible to make a more elegant solution
         error_msg = e.errors()[0]["msg"]
 
-        return templates.TemplateResponse(
-            name="auth/register.html",
-            context={"request": request, "error": f"ERROR! {error_msg}"},
+        return render_template(
+            request,
+            template="auth/register.html",
             status_code=status.HTTP_400_BAD_REQUEST,
+            msg=f"ERROR! {error_msg}",
         )
 
     return RedirectResponse(url="/app/login", status_code=status.HTTP_303_SEE_OTHER)
@@ -79,13 +80,12 @@ def login(
     user = get_user_by_email(db, email)
 
     if not user or not pwd_context.verify(password, user.password):
-        return templates.TemplateResponse(
-            name="auth/login.html",
-            context={
-                "request": request,
-                "error": f"ERROR! Incorrect e-mail or password.",
-            },
+
+        return render_template(
+            request,
+            template="auth/login.html",
             status_code=status.HTTP_400_BAD_REQUEST,
+            msg="ERROR! Incorrect e-mail or password.",
         )
 
     # Creating the new session
