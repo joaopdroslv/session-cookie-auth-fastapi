@@ -27,7 +27,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
 
         if not session_id:
             logger.info('Missing "session_id", redirecting to login.')
-            return RedirectResponse("/auth/login", status_code=status.HTTP_302_FOUND)
+            return RedirectResponse("/app/login", status_code=status.HTTP_303_SEE_OTHER)
 
         try:
             valid_user_session = None
@@ -50,7 +50,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
                         'Invalid or expired "session_id", redirecting to login.'
                     )
                     return RedirectResponse(
-                        "/auth/login", status_code=status.HTTP_302_FOUND
+                        "/app/login", status_code=status.HTTP_303_SEE_OTHER
                     )
 
                 now = datetime.now()
@@ -76,7 +76,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
                     )
 
                     return RedirectResponse(
-                        "/auth/login", status_code=status.HTTP_302_FOUND
+                        "/app/login", status_code=status.HTTP_303_SEE_OTHER
                     )
 
                 valid_user_session.last_seen = now

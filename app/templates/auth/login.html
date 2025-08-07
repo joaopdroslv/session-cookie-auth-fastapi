@@ -6,7 +6,7 @@
 
 <div class="d-flex justify-content-center align-items-center vh-100">
   <div class="w-25">
-    <form action="/auth/login" method="POST">
+    <form action="{{ request.url_for('auth_login') }}" method="POST">
       E-mail
       <input
         type="text"
@@ -30,6 +30,9 @@
         <button type="submit" class="btn btn-primary w-50">Login</button>
       </div>
     </form>
+    <div class="d-flex justify-content-center align-items-center w-100">
+      <a href="{{ request.url_for('register') }}" class="btn btn-secondary w-50">Create Account</a>
+    </div>
   </div>
 </div>
 

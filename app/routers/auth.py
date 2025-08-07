@@ -17,15 +17,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@router.get("/register", response_class=HTMLResponse)
-def register_page(request: Request):
-
-    return templates.TemplateResponse(
-        name="auth/register.html", context={"request": request}, status_code=200
-    )
-
-
-@router.post("/register")
+@router.post("/register", name="auth_register")
 async def register(
     request: Request,
     response: Response,
@@ -71,18 +63,10 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST,
         )
 
-    return RedirectResponse(url="/auth/login", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/app/login", status_code=status.HTTP_303_SEE_OTHER)
 
 
-@router.get("/login", response_class=HTMLResponse)
-def login_page(request: Request):
-
-    return templates.TemplateResponse(
-        name="auth/login.html", context={"request": request}, status_code=200
-    )
-
-
-@router.post("/login")
+@router.post("/login", name="auth_login")
 def login(
     request: Request,
     response: Response,
